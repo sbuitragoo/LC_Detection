@@ -1,0 +1,27 @@
+<annotation>
+  <folder>IMG</folder>
+  <filename>IMG_20211013_152414.jpg</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>1080</width>
+    <height>1334</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>Luisito Comunica</name>
+    <truncated>0</truncated>
+    <occluded>0</occluded>
+    <difficult>0</difficult>
+    <bndbox>
+      <xmin>259.88</xmin>
+      <ymin>283.34</ymin>
+      <xmax>1080.0</xmax>
+      <ymax>1244.34</ymax>
+    </bndbox>
+  </object>
+</annotation>
