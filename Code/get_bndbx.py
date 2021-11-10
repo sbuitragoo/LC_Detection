@@ -1,7 +1,3 @@
-xml_dir = '/Data/Annotations'
-img_dir = '/Data/JPEGImages'
-labels = ['Luisillo El Pillo']
-
 def leer_annotations(ann_dir, img_dir, labels=[]):
     """Gets bounding box location for each image
 
@@ -73,3 +69,34 @@ def get_points(train_imgs):
         cordinates[i,j+1] = train_imgs[i]['object'][0]['xmin']
         cordinates[i,j+2] = train_imgs[i]['object'][0]['ymax']
         cordinates[i,j+3] = train_imgs[i]['object'][0]['ymin']
+
+def img_conv(imgr,cord,fila):
+  path = sorted(os.listdir(imgr))
+  img = cv2.imread('Detección/JPEGImages/' + path[fila])
+  sp, ep = (int(cord[fila,1]), int(cord[fila,3])), (int(cord[fila,0]), int(cord[fila,2]))
+  colors = (255,255,0)
+  nimg = cv2.rectangle(img, sp, ep, colors, thickness = 2)
+  return nimg
+
+def bndbox_img(imgs, img_dir, cordinates):
+    nimgs = []
+
+    for i in range(len(imgs)):
+        image_to_append = img_conv(img_dir, cordinates, i)
+        nimgs.append(image_to_append)
+    return nimgs
+
+def aug_boxes(boxes, num):
+    """Duplicate bounding boxes for new images
+
+    Args:
+        boxes ([nparray]): [array with xmax, xmin, ymax, ymin]
+        num ([int]): [number of batches of new data]
+
+    Returns:
+        [nparray]: [complete xy cordinates]
+    """
+    b = boxes
+    for i in range(num):
+        b = np.concatenate((b,boxes))
+    return b
