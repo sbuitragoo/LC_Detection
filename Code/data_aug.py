@@ -47,6 +47,14 @@ def GImg(imgs):
 
 
 def randomBr(imgs):
+    """Change de Brightness of a set of images
+
+    Args:
+        imgs ([list]): [list of images to modify]
+
+    Returns:
+        [list]: [list of images with brightness changed]
+    """
     rb = []
     for i in range(len(imgs)):
         seed = (i, 0)
@@ -57,6 +65,14 @@ def randomBr(imgs):
 
 
 def randomSat(imgs):
+    """Change Saturation of a set of images
+
+    Args:
+        imgs ([list]): [list of images to modify]
+
+    Returns:
+        [list]: [images with new saturation]
+    """
     sat = []
     for i in range(len(imgs)):
         seed = (i,0)
@@ -66,6 +82,14 @@ def randomSat(imgs):
 
 
 def rgb2gray(imgs):
+    """Change images to grayscale
+
+    Args:
+        imgs ([list]): [images to change their channels]
+
+    Returns:
+        [list]: [grayscale images]
+    """
     gscale = []
     for i in range(len(imgs)):
         gray = tf.image.rgb_to_grayscale(imgs[i])
@@ -74,6 +98,14 @@ def rgb2gray(imgs):
 
 
 def crop(imgs):
+    """Crop a set of images
+
+    Args:
+        imgs ([list]): [images to crop]
+
+    Returns:
+        [list]: [list with cropped images]
+    """
     crp = []
     for i in range(len(imgs)):
         cropped = tf.image.central_crop(imgs[i], central_fraction=0.5)
@@ -82,6 +114,14 @@ def crop(imgs):
 
 
 def randomCont(imgs):
+    """Change contrast to a set of images
+
+    Args:
+        imgs ([list]): [images to modify]
+
+    Returns:
+        [list]: [images with new random contrast]
+    """
     con = []
     for i in range(len(imgs)):
         seed = (i,0)
