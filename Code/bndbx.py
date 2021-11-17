@@ -1,3 +1,11 @@
+import xml.etree.ElementTree as ET
+from pathlib import Path
+import os
+import tensorflow as tf
+import cv2
+import numpy as np
+
+
 def leer_annotations(ann_dir, img_dir, labels=[]):
     """Gets bounding box location for each image
 
@@ -69,6 +77,7 @@ def get_points(train_imgs):
         cordinates[i,j+1] = train_imgs[i]['object'][0]['xmin']
         cordinates[i,j+2] = train_imgs[i]['object'][0]['ymax']
         cordinates[i,j+3] = train_imgs[i]['object'][0]['ymin']
+    return cordinates
 
 def img_conv(imgr,cord,fila):
   path = sorted(os.listdir(imgr))
@@ -98,5 +107,27 @@ def aug_boxes(boxes, num):
     """
     b = boxes
     for i in range(num):
-        b = np.concatenate((b,boxes))
+        b = np.concatenate((b,b))
     return b
+
+def rezise_images(imgs,x):
+
+    """Re-scale images
+    """
+
+    nimgs = []
+
+    for i in range(0,len(imgs)):
+        nimgs.append(tf.image.resize(imgs[i],[x,x]))
+    return nimgs
+
+def reScale_bndboxes(imgs, bndbox, x):
+    for i in range(len(bndbox)):
+        j=0
+        xscale = imgs[i].shape[1]/x
+        yscale = imgs[i].shape[0]/x
+        bndbox[i,j] =  bndbox[i,j]*xscale #xmax
+        bndbox[i,j+1] =  bndbox[i,j+1]*xscale #xmin
+        bndbox[i,j+2] =  bndbox[i,j+2]*yscale #ymax
+        bndbox[i,j+3] =  bndbox[i,j+3]*yscale #ymin
+    return bndbox
