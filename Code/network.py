@@ -66,9 +66,10 @@ def VGG():
     x = MaxPool2D(pool_size =2, strides =2, padding ='same')(x)
 
     x = Flatten()(x) 
-    x = Dense(units = 4096, activation ='relu')(x) 
-    x = Dense(units = 4096, activation ='relu')(x) 
-    output = Dense(units = 1000, activation ='softmax')(x)
+    x = Dense(128, activation ='relu')(x) 
+    x = Dense(64, activation ='relu')(x) 
+    x = Dense(32, activation ='relu')(x) 
+    output = Dense(4, activation ='relu')(x)
 
 
     model = Model(inputs=m_input, outputs= output)
