@@ -34,7 +34,7 @@ def img2tensor(arg):
       [tf.tensor]: [image tensor]
   """
   arg = tf.convert_to_tensor(arg, dtype=tf.float32)
-  arg = arg/255
+  arg = arg/255.0
   return arg
 
 
@@ -152,53 +152,57 @@ def randomCont(imgs):
         con.append(cont)
     return con
 
-xml_dir = './Data/Annotations/'
-img_dir = './Data/JPEGImages/'
-labels = ['Luisillo El Pillo']
+def data(xml_dir, img_dir, labels):
 
-train_imgs, train_labels = leer_annotations(xml_dir, img_dir, labels)
+    #xml_dir = './Data/Annotations/'
+    #img_dir = './Data/JPEGImages/'
+    #labels = ['Luisillo El Pillo']
 
-boxes = get_points(train_imgs)
+    train_imgs, train_labels = leer_annotations(xml_dir, img_dir, labels)
 
-images = readImgs(img_dir)
+    boxes = get_points(train_imgs)
 
-images = np.asarray(net_img(images))
+    images = readImgs(img_dir)
 
-train_images, test_images ,train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
+    images = np.asarray(net_img(images))
 
-#---------------------Train_Data Augmentation---------------------#
+    train_images, test_images ,train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
 
-aug = np.asarray(randomBr(train_images))
-train_images = np.concatenate((train_images, aug))
+    #---------------------Train_Data Augmentation---------------------#
 
-aug = np.asarray(randomCont(train_images))
-train_images = np.concatenate((train_images, aug))
+    aug = np.asarray(randomBr(train_images))
+    train_images = np.concatenate((train_images, aug))
 
-#aug = np.array(randomSat(train_images))
-#train_images = np.concatenate((train_images, aug))
+    aug = np.asarray(randomCont(train_images))
+    train_images = np.concatenate((train_images, aug))
 
-aug = np.asarray(crop(train_images))
-train_images = np.concatenate((train_images, aug))
+    #aug = np.array(randomSat(train_images))
+    #train_images = np.concatenate((train_images, aug))
 
-#---------------------Train Boxes---------------------#
+    aug = np.asarray(crop(train_images))
+    train_images = np.concatenate((train_images, aug))
 
-train_targets = aug_boxes(train_targets, 3)
+    #---------------------Train Boxes---------------------#
+
+    train_targets = aug_boxes(train_targets, 3)
 
 
-#---------------------Test_Data Augmentation---------------------#
+    #---------------------Test_Data Augmentation---------------------#
 
-aug = np.asarray(randomBr(test_images))
-test_images = np.concatenate((test_images, aug))
+    aug = np.asarray(randomBr(test_images))
+    test_images = np.concatenate((test_images, aug))
 
-aug = np.asarray(randomCont(test_images))
-test_images = np.concatenate((test_images, aug))
+    aug = np.asarray(randomCont(test_images))
+    test_images = np.concatenate((test_images, aug))
 
-#aug = np.array(randomSat(images))
-#test_images = np.concatenate((test_images, aug))
+    #aug = np.array(randomSat(images))
+    #test_images = np.concatenate((test_images, aug))
 
-aug = np.asarray(crop(test_images))
-test_images = np.concatenate((test_images, aug))
+    aug = np.asarray(crop(test_images))
+    test_images = np.concatenate((test_images, aug))
 
-#---------------------Test Boxes---------------------#
+    #---------------------Test Boxes---------------------#
 
-test_targets = aug_boxes(test_targets, 3)
+    test_targets = aug_boxes(test_targets, 3)
+
+    return train_images, test_images, train_targets, test_targets

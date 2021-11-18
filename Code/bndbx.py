@@ -124,8 +124,8 @@ def rezise_images(imgs,x):
 def reScale_bndboxes(imgs, bndbox, x):
     for i in range(len(bndbox)):
         j=0
-        xscale = imgs[i].shape[1]/x
-        yscale = imgs[i].shape[0]/x
+        xscale = x/imgs[i].shape[1]
+        yscale = x/imgs[i].shape[0]
         bndbox[i,j] =  bndbox[i,j]*xscale #xmax
         bndbox[i,j+1] =  bndbox[i,j+1]*xscale #xmin
         bndbox[i,j+2] =  bndbox[i,j+2]*yscale #ymax

@@ -6,46 +6,52 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.losses import binary_crossentropy, sparse_categorical_crossentropy
 from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
-from bndbx import get_points, leer_annotations, reScale_bndboxes, rezise_images
-from data_aug import readImgs, net_img, train_images, test_images, train_targets, test_targets
+from bndbx import get_points, leer_annotations, reScale_bndboxes, rezise_images, img_conv
+from data_aug import net_img, data
 from network import VGG
+import cv2
 
-"""
 xml_dir = './Data/Annotations/'
 img_dir = './Data/JPEGImages/'
 labels = ['Luisillo El Pillo']
 
-train_imgs, train_labels = leer_annotations(xml_dir, img_dir, labels)
+Xtrain, Xtest, ytrain, ytest = data(xml_dir, img_dir, labels)
 
-boxes = get_points(train_imgs)
-
-images = readImgs(img_dir)
-
-images, boxes = rezise_data(images, boxes, 224)
-
-images = np.asarray(net_img(images))
-
-train_images, test_images, train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
-"""
-
-Xtrain = train_images
-Xtest = test_images
-ytrain = train_targets
-ytest = test_targets
+ytrain = reScale_bndboxes(Xtrain, ytrain, 224)
+ytest = reScale_bndboxes(Xtest, ytest, 224)
 
 Xtrain = rezise_images(Xtrain, 224)
 Xtrain = np.asarray(Xtrain)
-ytrain = reScale_bndboxes(Xtrain, ytrain, 224)
+
 Xtest = rezise_images(Xtest, 224)
 Xtest = np.asarray(Xtest)
-ytest = reScale_bndboxes(Xtest, ytest, 224)
 
+import matplotlib.pyplot as plt
+
+img = Xtrain[0]
+cord = ytrain[0].astype("int")
+
+img = (img*255.0).astype("uint8")
+sp = (cord[0], cord[2])
+ep = (cord[1], cord[3])
+colors = (255,0,0)
+
+plt.imshow(img)
+plt.show()
+
+# while True:
+#     cv2.imshow('image',cv2.rectangle(img, sp, ep, colors, thickness = 2))
+#     #cv2.keywait(500)
+
+"""
 model = VGG()
 
 optimizer = Adam(1e-4)
 
-model.compile(loss = 'mse', optimizer = optimizer, metrics=['accuracy'])
+model.compile(loss = 'mse', optimizer = optimizer, metrics=[''])
 
-hitory = model.fit(Xtrain, ytrain, validation_data=(Xtest, ytest), batch_size=16, epochs = 20, verbose=1)
+hitory = model.fit(Xtrain, ytrain, validation_data=(Xtest, ytest), batch_size=4, epochs = 20, verbose=1)
 
-#model.save('LC_detector.h5')
+model.save('LC_detector.h5')
+
+"""
