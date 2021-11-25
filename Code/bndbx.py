@@ -107,19 +107,18 @@ def aug_boxes(boxes, num):
     """
     b = boxes
     for i in range(num):
-        b = np.concatenate((b,b))
+        b = np.concatenate((b, boxes))
     return b
 
-def rezise_images(imgs,x):
-
-    """Re-scale images
-    """
-
-    nimgs = []
-
-    for i in range(0,len(imgs)):
-        nimgs.append(tf.image.resize(imgs[i],[x,x]))
-    return nimgs
+def flip_boxes(boxes):
+    orig = boxes
+    for i in range(len(boxes)):
+        j = 0
+        boxes[i,j] = orig[i,j+3] #Xmax se cambia por Ymin
+        boxes[i,j+1] = orig[i,j+2] #Xmin se cambia por Ymax
+        boxes[i,j+2] = orig[i,j] #Ymax se cambia por Xmax
+        boxes[i,j+3] = orig[i,j+1] #Ymin se cambia por Xmin
+    return boxes
 
 def reScale_bndboxes(imgs, bndbox, x):
     for i in range(len(bndbox)):

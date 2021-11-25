@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from bndbx import leer_annotations, get_points, img_conv, bndbox_img, aug_boxes, reScale_bndboxes, rezise_images
+from bndbx import leer_annotations, get_points, img_conv, bndbox_img, aug_boxes, reScale_bndboxes, flip_boxes
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import os
@@ -20,6 +20,7 @@ def readImgs(img_path):
   imgs = []
   for i in range(len(path)):
     img = cv2.imread(img_path + path[i])
+    img = cv2.resize(img, (224,224), interpolation = cv2.INTER_AREA)
     imgs.append(img)
   return imgs
 
@@ -79,7 +80,7 @@ def flip_mirror(imgs):
         flipped.append(flip_left_right)
     return flipped
 
-def flipN(imgs):
+def transpose(imgs):
     flipped = []
     for i in range(len(imgs)):
         transpose_image = tf.image.transpose_image(imgs[i])
@@ -164,45 +165,59 @@ def data(xml_dir, img_dir, labels):
 
     images = readImgs(img_dir)
 
-    images = np.asarray(net_img(images))
+    images = net_img(images)
 
     train_images, test_images ,train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
 
     #---------------------Train_Data Augmentation---------------------#
 
-    aug = np.asarray(randomBr(train_images))
-    train_images = np.concatenate((train_images, aug))
+    ImagesToAugmentTrain = train_images
+    
+    aug = randomBr(ImagesToAugmentTrain)
+    train_images.append(aug)
 
-    aug = np.asarray(randomCont(train_images))
-    train_images = np.concatenate((train_images, aug))
+    aug = randomCont(ImagesToAugmentTrain)
+    train_images.append(aug)
 
-    #aug = np.array(randomSat(train_images))
-    #train_images = np.concatenate((train_images, aug))
+    aug = randomSat(ImagesToAugmentTrain)
+    train_images.append(aug)
 
-    aug = np.asarray(crop(train_images))
-    train_images = np.concatenate((train_images, aug))
+    aug = rgb2gray(ImagesToAugmentTrain)
+    train_images.append(aug)
+
+    aug = transpose(ImagesToAugmentTrain)
+    train_images.append(aug)
 
     #---------------------Train Boxes---------------------#
 
+    train_transposed_targets = flip_boxes(train_targets)
     train_targets = aug_boxes(train_targets, 3)
+    train_targets = np.concatenate((train_targets, train_transposed_targets))
 
 
     #---------------------Test_Data Augmentation---------------------#
 
-    aug = np.asarray(randomBr(test_images))
-    test_images = np.concatenate((test_images, aug))
+    ImagesToAugmentTest = test_images
 
-    aug = np.asarray(randomCont(test_images))
-    test_images = np.concatenate((test_images, aug))
+    aug = randomBr(ImagesToAugmentTest)
+    test_images.append(aug)
 
-    #aug = np.array(randomSat(images))
-    #test_images = np.concatenate((test_images, aug))
+    aug = randomCont(ImagesToAugmentTest)
+    test_images.append(aug)
 
-    aug = np.asarray(crop(test_images))
-    test_images = np.concatenate((test_images, aug))
+    aug = randomSat(ImagesToAugmentTest)
+    test_images.append(aug)
+
+    aug = rgb2gray(ImagesToAugmentTest)
+    test_images.append(aug)
+
+    aug = transpose(ImagesToAugmentTest)
+    test_images.append(aug)
 
     #---------------------Test Boxes---------------------#
 
+    test_transposed_targets = flip_boxes(test_targets)
     test_targets = aug_boxes(test_targets, 3)
+    test_targets = np.concatenate((test_targets, test_transposed_targets))
 
     return train_images, test_images, train_targets, test_targets
