@@ -120,11 +120,11 @@ def flip_boxes(boxes):
         boxes[i,j+3] = orig[i,j+1] #Ymin se cambia por Xmin
     return boxes
 
-def reScale_bndboxes(imgs, bndbox, x):
+def reScale_bndboxes(shapes, bndbox, x):
     for i in range(len(bndbox)):
         j=0
-        xscale = x/imgs[i].shape[1]
-        yscale = x/imgs[i].shape[0]
+        xscale = x/shapes[i,j]
+        yscale = x/shapes[i,j+1]
         bndbox[i,j] =  bndbox[i,j]*xscale #xmax
         bndbox[i,j+1] =  bndbox[i,j+1]*xscale #xmin
         bndbox[i,j+2] =  bndbox[i,j+2]*yscale #ymax

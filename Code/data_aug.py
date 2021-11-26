@@ -18,11 +18,16 @@ def readImgs(img_path):
   """
   path = sorted(os.listdir(img_path))
   imgs = []
+  shape = np.zeros((len(path), 2))
   for i in range(len(path)):
+    j = 0
     img = cv2.imread(img_path + path[i])
+    shape[i,j] = img.shape[0]
+    shape[i,j+1] = img.shape[1]
     img = cv2.resize(img, (224,224), interpolation = cv2.INTER_AREA)
     imgs.append(img)
-  return imgs
+    j+=1
+  return imgs, shape
 
 
 def img2tensor(arg):
@@ -43,17 +48,17 @@ def net_img(imgs):
   """Transform a list of images into a list of tensors
 
   Args:
-      imgs ([list]): [list with images]
+      imgs (list): list with images
 
   Returns:
-      [list]: [list with image tensors]
+      list: list with image tensors
   """
-  Tens = []
+  tensores = []
   for i in range(len(imgs)):
     im = imgs[i]
     tensor = img2tensor(im)
-    Tens.append(tensor)
-  return Tens
+    tensores.append(tensor)
+  return tensores
 
 
 def randomBr(imgs):
@@ -81,21 +86,29 @@ def flip_mirror(imgs):
     return flipped
 
 def transpose(imgs):
-    flipped = []
+    """Transposes a set of images
+
+    Args:
+        imgs (list): Set of images to transpose
+
+    Returns:
+        list: Transposed images
+    """
+    transposed = []
     for i in range(len(imgs)):
-        transpose_image = tf.image.transpose_image(imgs[i])
-        flipped.append(transpose_image)
-    return flipped
+        transpose_image = tf.image.transpose(imgs[i])
+        transposed.append(transpose_image)
+    return transposed
 
 
 def randomSat(imgs):
     """Change Saturation of a set of images
 
     Args:
-        imgs ([list]): [list of images to modify]
+        imgs (list): list of images to modify
 
     Returns:
-        [list]: [images with new saturation]
+        list: images with new saturation
     """
     sat = []
     for i in range(len(imgs)):
@@ -155,68 +168,63 @@ def randomCont(imgs):
 
 def data(xml_dir, img_dir, labels):
 
-    #xml_dir = './Data/Annotations/'
-    #img_dir = './Data/JPEGImages/'
-    #labels = ['Luisillo El Pillo']
-
     train_imgs, train_labels = leer_annotations(xml_dir, img_dir, labels)
 
-    boxes = get_points(train_imgs)
+    images, shapes = readImgs(img_dir)
 
-    images = readImgs(img_dir)
+    print(shapes.shape)
+
+    boxes = get_points(train_imgs)
+    boxes = reScale_bndboxes(shapes, boxes, 224)
 
     images = net_img(images)
 
-    train_images, test_images ,train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
+    train_images, test_images, train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
 
     #---------------------Train_Data Augmentation---------------------#
 
-    ImagesToAugmentTrain = train_images
+    ImagesToAugmentTrain = train_images.copy()
     
-    aug = randomBr(ImagesToAugmentTrain)
-    train_images.append(aug)
+    aug1 = randomBr(ImagesToAugmentTrain)
+    train_images.append(aug1)
 
-    aug = randomCont(ImagesToAugmentTrain)
-    train_images.append(aug)
+    aug2 = randomCont(ImagesToAugmentTrain)
+    train_images.append(aug2)
 
-    aug = randomSat(ImagesToAugmentTrain)
-    train_images.append(aug)
+    aug3 = randomSat(ImagesToAugmentTrain)
+    train_images.append(aug3)
 
-    aug = rgb2gray(ImagesToAugmentTrain)
-    train_images.append(aug)
-
-    aug = transpose(ImagesToAugmentTrain)
-    train_images.append(aug)
+    aug4 = transpose(train_images)
+    train_images.append(aug4)
 
     #---------------------Train Boxes---------------------#
 
     train_transposed_targets = flip_boxes(train_targets)
+    train_transposed_targets = aug_boxes(train_transposed_targets, 3)
     train_targets = aug_boxes(train_targets, 3)
     train_targets = np.concatenate((train_targets, train_transposed_targets))
 
 
     #---------------------Test_Data Augmentation---------------------#
 
-    ImagesToAugmentTest = test_images
+    ImagesToAugmentTest = test_images.copy()
 
-    aug = randomBr(ImagesToAugmentTest)
-    test_images.append(aug)
+    aug5 = randomBr(ImagesToAugmentTest)
+    test_images.append(aug5)
 
-    aug = randomCont(ImagesToAugmentTest)
-    test_images.append(aug)
+    aug6 = randomCont(ImagesToAugmentTest)
+    test_images.append(aug6)
 
-    aug = randomSat(ImagesToAugmentTest)
-    test_images.append(aug)
+    aug7 = randomSat(ImagesToAugmentTest)
+    test_images.append(aug7)
 
-    aug = rgb2gray(ImagesToAugmentTest)
-    test_images.append(aug)
-
-    aug = transpose(ImagesToAugmentTest)
-    test_images.append(aug)
+    aug8 = transpose(test_images)
+    test_images.append(aug8)
 
     #---------------------Test Boxes---------------------#
 
     test_transposed_targets = flip_boxes(test_targets)
+    test_transposed_targets = aug_boxes(test_transposed_targets, 3)
     test_targets = aug_boxes(test_targets, 3)
     test_targets = np.concatenate((test_targets, test_transposed_targets))
 
