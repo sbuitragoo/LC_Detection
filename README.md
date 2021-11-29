@@ -1,4 +1,4 @@
-# LC-NET
+# Detection
 
 Network created with VGG architecture trained to detect [`Luisito Comunica`](https://www.instagram.com/luisitocomunica/) inside an image.
 
