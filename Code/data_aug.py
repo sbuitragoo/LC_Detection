@@ -182,20 +182,24 @@ def data(xml_dir, img_dir, labels):
     train_images, test_images, train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
 
     #---------------------Train_Data Augmentation---------------------#
-
+    
     ImagesToAugmentTrain = train_images.copy()
     
-    aug1 = randomBr(ImagesToAugmentTrain)
-    train_images.append(aug1)
+    aug = randomBr(ImagesToAugmentTrain)
+    train_images = [*train_images,*aug]
+    # train_images.append(aug)
 
-    aug2 = randomCont(ImagesToAugmentTrain)
-    train_images.append(aug2)
+    aug = randomCont(ImagesToAugmentTrain)
+    train_images = [*train_images,*aug]
+    #train_images.append(aug)
 
-    aug3 = randomSat(ImagesToAugmentTrain)
-    train_images.append(aug3)
+    aug = randomSat(ImagesToAugmentTrain)
+    train_images = [*train_images,*aug]
+    #train_images.append(aug)
 
-    aug4 = transpose(train_images)
-    train_images.append(aug4)
+    aug = transpose(train_images)
+    train_images = [*train_images,*aug]
+    #train_images.append(aug)
 
     #---------------------Train Boxes---------------------#
 
@@ -209,17 +213,21 @@ def data(xml_dir, img_dir, labels):
 
     ImagesToAugmentTest = test_images.copy()
 
-    aug5 = randomBr(ImagesToAugmentTest)
-    test_images.append(aug5)
+    aug = randomBr(ImagesToAugmentTest)
+    test_images = [*test_images,*aug]
+    #test_images.append(aug)
 
-    aug6 = randomCont(ImagesToAugmentTest)
-    test_images.append(aug6)
+    aug = randomCont(ImagesToAugmentTest)
+    test_images = [*test_images,*aug]
+    #test_images.append(aug)
 
-    aug7 = randomSat(ImagesToAugmentTest)
-    test_images.append(aug7)
+    aug = randomSat(ImagesToAugmentTest)
+    test_images = [*test_images,*aug]
+    #test_images.append(aug)
 
-    aug8 = transpose(test_images)
-    test_images.append(aug8)
+    aug = transpose(test_images)
+    test_images = [*test_images,*aug]
+    # test_images.append(aug)
 
     #---------------------Test Boxes---------------------#
 

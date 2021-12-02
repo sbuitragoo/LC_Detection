@@ -11,8 +11,8 @@ from data_aug import net_img, data
 from network import VGG
 import cv2
 
-xml_dir = './Data/Annotations/'
-img_dir = './Data/JPEGImages/'
+xml_dir = '../Data/Annotations/'
+img_dir = '../Data/JPEGImages/'
 labels = ['Luisillo El Pillo']
 
 Xtrain, Xtest, ytrain, ytest = data(xml_dir, img_dir, labels)
@@ -20,8 +20,6 @@ Xtrain, Xtest, ytrain, ytest = data(xml_dir, img_dir, labels)
 Xtrain = np.asarray(Xtrain)
 Xtest = np.asarray(Xtest)
 
-ytrain = reScale_bndboxes(Xtrain, ytrain, 224)
-ytest = reScale_bndboxes(Xtest, ytest, 224)
 
 print("Entrenamiento: ", Xtrain.shape, ytrain.shape)
 print("Test: ", Xtest.shape, ytest.shape)
