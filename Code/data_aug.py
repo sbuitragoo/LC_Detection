@@ -30,37 +30,6 @@ def readImgs(img_path):
   return imgs, shape
 
 
-def img2tensor(arg):
-  """Convert Cv2 images to tensors
-
-  Args:
-      arg ([cv2 image]): []
-
-  Returns:
-      [tf.tensor]: [image tensor]
-  """
-  arg = tf.convert_to_tensor(arg, dtype=tf.float32)
-  arg = arg/255.0
-  return arg
-
-
-def net_img(imgs):
-  """Transform a list of images into a list of tensors
-
-  Args:
-      imgs (list): list with images
-
-  Returns:
-      list: list with image tensors
-  """
-  tensores = []
-  for i in range(len(imgs)):
-    im = imgs[i]
-    tensor = img2tensor(im)
-    tensores.append(tensor)
-  return tensores
-
-
 def randomBr(imgs):
     """Change de Brightness of a set of images
 
@@ -81,7 +50,7 @@ def randomBr(imgs):
 def flip_mirror(imgs):
     flipped = []
     for i in range(len(imgs)):
-        flip_left_right = t.image.flip_left_right(imgs[i])
+        flip_left_right = tf.image.flip_left_right(imgs[i])
         flipped.append(flip_left_right)
     return flipped
 
@@ -166,74 +135,3 @@ def randomCont(imgs):
         con.append(cont)
     return con
 
-def data(xml_dir, img_dir, labels):
-
-    train_imgs, train_labels = leer_annotations(xml_dir, img_dir, labels)
-
-    images, shapes = readImgs(img_dir)
-
-    print(shapes.shape)
-
-    boxes = get_points(train_imgs)
-    boxes = reScale_bndboxes(shapes, boxes, 224)
-
-    images = net_img(images)
-
-    train_images, test_images, train_targets, test_targets = train_test_split(images,boxes, test_size=0.2)
-
-    #---------------------Train_Data Augmentation---------------------#
-    
-    ImagesToAugmentTrain = train_images.copy()
-    
-    aug = randomBr(ImagesToAugmentTrain)
-    train_images = [*train_images,*aug]
-    # train_images.append(aug)
-
-    aug = randomCont(ImagesToAugmentTrain)
-    train_images = [*train_images,*aug]
-    #train_images.append(aug)
-
-    aug = randomSat(ImagesToAugmentTrain)
-    train_images = [*train_images,*aug]
-    #train_images.append(aug)
-
-    aug = transpose(train_images)
-    train_images = [*train_images,*aug]
-    #train_images.append(aug)
-
-    #---------------------Train Boxes---------------------#
-
-    train_transposed_targets = flip_boxes(train_targets)
-    train_transposed_targets = aug_boxes(train_transposed_targets, 3)
-    train_targets = aug_boxes(train_targets, 3)
-    train_targets = np.concatenate((train_targets, train_transposed_targets))
-
-
-    #---------------------Test_Data Augmentation---------------------#
-
-    ImagesToAugmentTest = test_images.copy()
-
-    aug = randomBr(ImagesToAugmentTest)
-    test_images = [*test_images,*aug]
-    #test_images.append(aug)
-
-    aug = randomCont(ImagesToAugmentTest)
-    test_images = [*test_images,*aug]
-    #test_images.append(aug)
-
-    aug = randomSat(ImagesToAugmentTest)
-    test_images = [*test_images,*aug]
-    #test_images.append(aug)
-
-    aug = transpose(test_images)
-    test_images = [*test_images,*aug]
-    # test_images.append(aug)
-
-    #---------------------Test Boxes---------------------#
-
-    test_transposed_targets = flip_boxes(test_targets)
-    test_transposed_targets = aug_boxes(test_transposed_targets, 3)
-    test_targets = aug_boxes(test_targets, 3)
-    test_targets = np.concatenate((test_targets, test_transposed_targets))
-
-    return train_images, test_images, train_targets, test_targets

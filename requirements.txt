@@ -1,7 +1,8 @@
 xml.etree.ElementTree
 pathlib
-tensorflow
-cv2
+tensorflow = 2.8.0
+cv2 = 4.5.5.62
 numpy
 matplotlib.pyplot
 os
+sklearn = 1.0.2

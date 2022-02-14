@@ -5,10 +5,6 @@ from tensorflow.keras.layers import Input, Add, Concatenate, Flatten, Dense, Con
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.losses import binary_crossentropy, sparse_categorical_crossentropy
 
-def resize_img(img, size):
-    img = tf.image.resize(img, (size, size))
-    return img
-
 
 def Conv(x, filt, size, strides=1, batch_norm=True):
     if strides == 1:
@@ -68,7 +64,7 @@ def VGG():
     x = Flatten()(x) 
     x = Dense(128, activation ='relu')(x) 
     x = Dense(64, activation ='relu')(x) 
-    x = Dense(32, activation ='relu')(x) 
+    x = Dense(32, activation ='linear')(x) 
     output = Dense(4, activation ='relu')(x)
 
 
